@@ -6,15 +6,10 @@ Main module providing fog computing capabilities for
 continuum computing in federated learning.
 """
 
+from .communication import CloudInterface, EdgeInterface, PeerInterface
 from .fog_node import FogNode
-from .communication import EdgeInterface, CloudInterface, PeerInterface
 
 __version__ = "0.1.0"
 __author__ = "FL-Fog Development Team"
 
-__all__ = [
-    "FogNode",
-    "EdgeInterface", 
-    "CloudInterface",
-    "PeerInterface"
-]
+__all__ = ["FogNode", "EdgeInterface", "CloudInterface", "PeerInterface"]

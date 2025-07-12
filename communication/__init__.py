@@ -8,12 +8,8 @@ Communication interfaces for fog node interactions with:
 - Peer fog nodes (HTTP/REST)
 """
 
-from .edge_interface import EdgeInterface
 from .cloud_interface import CloudInterface
+from .edge_interface import EdgeInterface
 from .peer_interface import PeerInterface
 
-__all__ = [
-    "EdgeInterface",
-    "CloudInterface", 
-    "PeerInterface"
-]
+__all__ = ["EdgeInterface", "CloudInterface", "PeerInterface"]

@@ -5,27 +5,30 @@ Setup script for FL-Fog package.
 Fog computing layer for federated learning in continuum environments.
 """
 
-from setuptools import setup, find_packages
 from pathlib import Path
+
+from setuptools import find_packages, setup
 
 # Read the contents of README file
 this_directory = Path(__file__).parent
-long_description = (this_directory / "README.md").read_text(encoding='utf-8')
+long_description = (this_directory / "README.md").read_text(encoding="utf-8")
 
 # Read requirements
 requirements = []
 requirements_path = this_directory / "requirements.txt"
 if requirements_path.exists():
-    requirements = requirements_path.read_text().strip().split('\n')
-    requirements = [req.strip() for req in requirements if req.strip() and not req.startswith('#')]
+    requirements = requirements_path.read_text().strip().split("\n")
+    requirements = [
+        req.strip() for req in requirements if req.strip() and not req.startswith("#")
+    ]
 
 # Read version from __init__.py
 version = "0.1.0"
 init_file = this_directory / "fog_node" / "__init__.py"
 if init_file.exists():
-    for line in init_file.read_text().split('\n'):
-        if line.startswith('__version__'):
-            version = line.split('=')[1].strip().strip('"').strip("'")
+    for line in init_file.read_text().split("\n"):
+        if line.startswith("__version__"):
+            version = line.split("=")[1].strip().strip('"').strip("'")
             break
 
 setup(
@@ -99,7 +102,7 @@ setup(
     zip_safe=False,
     keywords=[
         "federated-learning",
-        "fog-computing", 
+        "fog-computing",
         "continuum-computing",
         "edge-computing",
         "distributed-ai",
