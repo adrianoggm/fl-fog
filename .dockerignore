@@ -1,0 +1,118 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.tox/
+.coverage
+.coverage.*
+.cache
+.pytest_cache/
+htmlcov/
+.nox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Documentation
+docs/_build/
+.sphinx/
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.tmp/
+.temp/
+
+# Data files (don't include in image)
+data/
+cache/
+models/
+*.pkl
+*.joblib
+
+# Configuration (will be mounted)
+config/local_*
+config/*.local.*
+
+# Development files
+docker-compose.override.yml
+.env.local
+.env.development
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+
+# Documentation source
+README.md
+CHANGELOG.md
+CONTRIBUTING.md
+
+# License and other text files
+LICENSE
+NOTICE
+AUTHORS
+
+# Package files
+setup.py
+setup.cfg
+pyproject.toml
+MANIFEST.in
+requirements-dev.txt

@@ -1,0 +1,60 @@
+# Include documentation
+include README.md
+include LICENSE
+include CHANGELOG.md
+include CONTRIBUTING.md
+
+# Include configuration files
+recursive-include config *.yaml *.yml *.json
+recursive-include fog_node/config *.yaml *.yml
+
+# Include data files
+recursive-include fog_node/data *
+recursive-include communication/data *
+
+# Include scripts
+include test_ci_local.ps1
+include test_ci_local.sh
+
+# Include requirements
+include requirements.txt
+include requirements-dev.txt
+
+# Include Docker files
+include Dockerfile
+include .dockerignore
+include docker-compose.yml
+
+# Include CI/CD configuration
+include .github/workflows/*.yml
+include .pre-commit-config.yaml
+include tox.ini
+
+# Exclude development and build files
+exclude .gitignore
+exclude .env*
+exclude tox.ini
+exclude .coverage
+exclude .pytest_cache
+recursive-exclude . __pycache__
+recursive-exclude . *.py[co]
+recursive-exclude . *.orig
+recursive-exclude . *.rej
+recursive-exclude . .git*
+
+# Exclude test files from package
+recursive-exclude tests *
+exclude tests
+
+# Exclude documentation build files
+recursive-exclude docs/_build *
+recursive-exclude docs/_static *
+recursive-exclude docs/_templates *
+
+# Exclude temporary and cache files
+recursive-exclude . *.tmp
+recursive-exclude . *.temp
+recursive-exclude . .cache
+recursive-exclude logs *
+recursive-exclude cache *
+recursive-exclude data *

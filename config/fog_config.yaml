@@ -1,0 +1,117 @@
+# Fog Node Configuration
+fog_node:
+  node_id: "fog_node_01"
+  region: "europe-west"
+  location:
+    latitude: 52.5200
+    longitude: 13.4050
+    city: "Berlin"
+    country: "Germany"
+  
+  # Resource limits
+  resources:
+    max_cpu_usage: 0.8
+    max_memory_usage: 0.75
+    max_storage_gb: 100
+    max_concurrent_models: 10
+
+# Network Configuration
+network:
+  # Edge device communication
+  edge_interface:
+    protocol: "mqtt"
+    host: "0.0.0.0"
+    port: 1883
+    topic_prefix: "fl/edge"
+    qos: 1
+    keepalive: 60
+  
+  # Cloud server communication
+  cloud_interface:
+    protocol: "grpc"
+    host: "fl-server.example.com"
+    port: 50051
+    tls_enabled: true
+    retry_attempts: 3
+    timeout_seconds: 30
+  
+  # Inter-fog communication
+  peer_interface:
+    protocol: "http"
+    port: 8080
+    discovery_enabled: true
+    heartbeat_interval: 30
+
+# Aggregation Configuration
+aggregation:
+  strategy: "fedavg"  # fedavg, fedprox, scaffold
+  min_clients: 3
+  max_clients: 50
+  wait_timeout: 300  # seconds
+  quality_threshold: 0.95
+  
+  # Regional aggregation settings
+  regional:
+    enabled: true
+    rounds_before_cloud: 5
+    min_local_rounds: 2
+    convergence_threshold: 0.001
+
+# Caching Configuration
+cache:
+  model_cache:
+    max_size_gb: 20
+    ttl_hours: 24
+    compression_enabled: true
+    eviction_policy: "lru"  # lru, lfu, fifo
+  
+  data_cache:
+    max_size_gb: 10
+    ttl_hours: 12
+    encryption_enabled: true
+
+# Resource Management
+resource_management:
+  monitoring:
+    interval_seconds: 10
+    metrics_retention_hours: 48
+  
+  scheduling:
+    algorithm: "priority_queue"
+    load_balancing: true
+    migration_enabled: true
+    migration_threshold: 0.9
+
+# Security and Privacy
+security:
+  encryption:
+    enabled: true
+    algorithm: "AES-256"
+  
+  authentication:
+    enabled: true
+    method: "jwt"
+    token_expiry_hours: 24
+  
+  privacy:
+    differential_privacy: true
+    noise_multiplier: 1.1
+    l2_norm_clip: 1.0
+
+# Logging and Monitoring
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  file: "logs/fog_node.log"
+  max_size_mb: 100
+  backup_count: 5
+  
+monitoring:
+  prometheus:
+    enabled: true
+    port: 9090
+    metrics_path: "/metrics"
+  
+  health_check:
+    enabled: true
+    port: 8080
+    endpoint: "/health"

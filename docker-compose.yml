@@ -1,0 +1,169 @@
+version: '3.8'
+
+services:
+  # FL-Fog Node
+  fl-fog:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: fl-fog-node
+    ports:
+      - "8080:8080"    # HTTP API
+      - "1883:1883"    # MQTT
+      - "9090:9090"    # Prometheus metrics
+    volumes:
+      - ./config:/app/config
+      - ./logs:/app/logs
+      - ./data:/app/data
+      - ./cache:/app/cache
+      - .:/app  # Development mount
+    environment:
+      - FL_FOG_CONFIG_PATH=/app/config/fog_config.yaml
+      - PYTHONPATH=/app
+      - LOG_LEVEL=DEBUG
+    depends_on:
+      - redis
+      - mqtt-broker
+      - prometheus
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: fl-fog-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # MQTT Broker
+  mqtt-broker:
+    image: eclipse-mosquitto:2
+    container_name: fl-fog-mqtt
+    ports:
+      - "1883:1883"  # MQTT
+      - "9001:9001"  # WebSocket
+    volumes:
+      - ./config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_logs:/mosquitto/log
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # Prometheus for monitoring
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: fl-fog-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # Grafana for visualization
+  grafana:
+    image: grafana/grafana:latest
+    container_name: fl-fog-grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana/provisioning:/etc/grafana/provisioning:ro
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - prometheus
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # Jaeger for distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: fl-fog-jaeger
+    ports:
+      - "16686:16686"  # Jaeger UI
+      - "14268:14268"  # Jaeger HTTP
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+
+  # Edge device simulator
+  edge-simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile.edge-simulator
+    container_name: fl-fog-edge-sim
+    environment:
+      - FOG_NODE_URL=http://fl-fog:8080
+      - MQTT_BROKER=mqtt-broker:1883
+      - NUM_DEVICES=5
+    depends_on:
+      - fl-fog
+      - mqtt-broker
+    networks:
+      - fl-fog-network
+    restart: unless-stopped
+    profiles:
+      - simulation
+
+  # Testing environment
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: fl-fog-tests
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONPATH=/app
+      - REDIS_URL=redis://redis:6379
+      - MQTT_BROKER=mqtt-broker:1883
+    depends_on:
+      - redis
+      - mqtt-broker
+    networks:
+      - fl-fog-network
+    profiles:
+      - testing
+    command: pytest tests/ -v
+
+volumes:
+  redis_data:
+    driver: local
+  mosquitto_data:
+    driver: local
+  mosquitto_logs:
+    driver: local
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
+
+networks:
+  fl-fog-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
